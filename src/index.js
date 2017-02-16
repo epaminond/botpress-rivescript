@@ -61,7 +61,6 @@ module.exports = {
   ready: function(bp) {
 
     const riveDirectory = path.join(bp.dataLocation, 'rivescript')
-    const memoryFile = path.join(bp.dataLocation, 'rivescript.brain.json')
 
     if (!fs.existsSync(riveDirectory)) {
       fs.mkdirSync(riveDirectory)
@@ -76,17 +75,18 @@ module.exports = {
           usersVars[user] = rs.getUservars(user)
         })
 
-        const content = JSON.stringify(usersVars)
-        fs.writeFileSync(memoryFile, content)
+        bp.db.kvs.set('__rivescript', usersVars, 'brain')
       }
     }
     const restoreMemory = () => {
-      if (fs.existsSync(memoryFile)) {
-        bp.logger.debug('[rivescript] Restoring brain')
-        const content = JSON.parse(fs.readFileSync(memoryFile))
+      bp.logger.debug('[rivescript] Restoring brain')
+
+      bp.db.kvs.get('__rivescript', 'brain')
+      .then(content => {
+        if (!content) return
         const users = _.keys(content)
         users.forEach(user => rs.setUservars(user, content[user]))
-      }
+      })
     }
 
     const reloadRiveScript = () => {
