@@ -38,7 +38,7 @@ const handleMessage = (event, id, user, platform, sendTo, text, sendText) => {
 }
 
 const incomingMiddleware = (event, next) => {
-  const { user, channel, platform, bp, text, type, raw } = event
+  const { user, channel, platform, bp, text, type, raw, author } = event
   if (platform === 'facebook') {
     if (type !== 'message') {
       return next()
@@ -57,7 +57,7 @@ const incomingMiddleware = (event, next) => {
     if(!bp.discord.isPrivate(raw) || bp.discord.isSelf(user.id)) {
       return next()
     }
-    handleMessage(event, user.id, { id: user.id, username: user.username }, platform, channel.id, text, bp.discord.sendText)
+    handleMessage(event, user.id, author, platform, channel.id, text, bp.discord.sendText)
   } else {
     throw new Error('Unsupported platform: ', platform)
   }
