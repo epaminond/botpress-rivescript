@@ -60,7 +60,7 @@ The platform is injected in the user variables as the `platform` name.
 
 ```
 + execute
-- JS: console.log(rs, bp, event) // all available
+- JS: console.log(rs, bp, event, send) // all available
 
 + log
 - JS: bp.logger.info('Hello from RiveScript')
@@ -69,6 +69,21 @@ The platform is injected in the user variables as the `platform` name.
 - JS: bp.messenger.sendText(event.user.id, 'Buy?', { quick_replies: ['Yes', 'No'] })
 ```
 
+To execute your own script, you can register it to `bp` then use it directly in rivescript
+
+In your index.js
+```js
+bp.hello = (bp, send) => {
+  bp.logger.info('Will send from a custom script !')
+  send('This is a reply !', { quick_replies: ['Yes', 'No'] })
+}
+```
+
+In your rivescript
+```
++custom
+- JS: bp.hello(bp, send)
+```
 ### UTF-8 Support
 
 You can enable UTF-8 input parsing by either one of these methods:
@@ -132,7 +147,9 @@ Restart a conversation from scratch, erasing all variables or previous conversat
 
 Pull requests are welcomed! We believe that it takes all of us to create something big and impactful.
 
-We have a [Public Chatroom](https://gitter.im/botpress/core), everybody is invited to come and share ideas, issues or simply get in touch.
+There's a [Slack community](https://slack.botpress.io) where you are welcome to join us, ask any question and even help others.
+
+Get an invite and join us now! 👉[https://slack.botpress.io](https://slack.botpress.io)
 
 ## License
 

@@ -12,28 +12,54 @@ var utf8 = false
 
 const validateRiveName = (name) => /[A-Z0-9_-]+/i.test(name)
 
-const incomingMiddleware = (event, next) => {
-  if (event.platform === 'facebook') {
+const handleMessage = (event, id, user, platform, sendTo, text, sendText) => {
+  const options = {}
+  rs.setUservar(id, 'platform', platform)
+  rs.setUservars(id, user)
+  rs.replyAsync(id, text)
+  .then(reply => {
+    deliveries.forEach(delivery => {
+      if(delivery && delivery.test.test(reply)) {
+        const send = (reply, options) => {
+          sendText(sendTo, reply, options)
+        }
+        try {
+          delivery.handler(delivery.test.exec(reply), rs, event.bp, event, send)
+        } catch(err) {
+          event.bp.logger.error(err)
+          throw err
+        }
+        next()
+        return
+      }
+    })
+    sendText(sendTo, reply, options)
+  })
+}
 
-    if (event.type !== 'message') {
+const incomingMiddleware = (event, next) => {
+  const { user, channel, platform, bp, text, type, raw, author } = event
+  if (platform === 'facebook') {
+    if (type !== 'message') {
       return next()
     }
-
-    rs.setUservar(event.user.id, 'platform', event.platform)
-    rs.setUservars(event.user.id, event.user)
-    rs.replyAsync(event.user.id, event.text)
-    .then(reply => {
-      deliveries.forEach(delivery => {
-        if(delivery && delivery.test.test(reply)) {
-          delivery.handler(delivery.test.exec(reply), rs, event.bp, event)
-          next()
-          return
-        }
-      })
-      event.bp.messenger.sendText(event.user.id, reply)
-    })
+    handleMessage(event, user.id, user, platform, user.id, text, bp.messenger.sendText)
+  } else if(platform === "irc") {
+    if(type !== "pm") {
+      return next()
+    }
+    const sendTo = (type === "message") ? channel : user
+    handleMessage(event, user, user, platform, sendTo, text, bp.irc.sendMessage)
+  } else if (platform === "discord") {
+    if(type !== "message") {
+      return next()
+    }
+    if(!bp.discord.isPrivate(raw) || bp.discord.isSelf(user.id)) {
+      return next()
+    }
+    handleMessage(event, user.id, author, platform, channel.id, text, bp.discord.sendText)
   } else {
-    throw new Error('Unsupported platform: ', event.platform)
+    throw new Error('Unsupported platform: ', platform)
   }
   next()
 }
