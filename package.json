@@ -23,7 +23,7 @@
     "botpress-check": ">= 0.1 < 1",
     "botpress-update": "^0.x",
     "module-downgrade": "~1.0.x"
-  }, 
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/botpress/botpress-rivescript"
@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "bluebird": "^3.4.6",
+    "botpress-version-manager": "^1.0.2",
     "fs-extra": "^1.0.0",
     "lodash": "^4.16.6",
     "rivescript": "^1.17.0"
