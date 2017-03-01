@@ -1,3 +1,5 @@
+import checkVersion from 'botpress-version-manager'
+
 import path from 'path'
 import fs from 'fs-extra'
 import _ from 'lodash'
@@ -66,6 +68,9 @@ const incomingMiddleware = (event, next) => {
 
 module.exports = {
   init: function(bp) {
+
+    checkVersion(bp, __dirname)
+    
     bp.middlewares.register({
       name: 'rivescript.processIncomingMessages',
       order: 10,
