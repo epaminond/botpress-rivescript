@@ -9,7 +9,6 @@ import {
   Grid,
   Form,
   FormGroup,
-  Button,
   FormControl,
   ControlLabel,
   Panel,
@@ -165,26 +164,29 @@ export default class RiveScriptModule extends React.Component {
 
   renderHeader() {
 
-    const saveClass = classnames({
-      [style.dirty]: this.isDirty(this.state.selected)
+    const saveClassName = classnames({
+      [style.dirty]: this.isDirty(this.state.selected),
+      ['bp-button']: true,
+      [style.smallButton]: true
     })
 
     const className = classnames('pull-right', style.header)
+    const buttonClassName = classnames('bp-button', style.smallButton)
 
     return <Row className={style.headerRow}>
       <Col className={className}>
-        <Button onClick={this.toggleSimulation.bind(this)}>
+        <button className={buttonClassName} onClick={this.toggleSimulation.bind(this)}>
           {this.state.simulationOn ? <Glyphicon glyph='stop'></Glyphicon> : <Glyphicon glyph='play'></Glyphicon> }
-        </Button>
-        <Button onClick={this.saveCurrentFile.bind(this)} className={saveClass}>
+        </button>
+        <button className={saveClassName} onClick={this.saveCurrentFile.bind(this)}>
           <Glyphicon glyph='floppy-disk'></Glyphicon>
-        </Button>
-        <Button onClick={this.createNewFile.bind(this)}>
+        </button>
+        <button className={buttonClassName} onClick={this.createNewFile.bind(this)}>
           <Glyphicon glyph='file'></Glyphicon>
-        </Button>
-        <Button onClick={this.deleteScript.bind(this)}>
+        </button>
+        <button className={buttonClassName} onClick={this.deleteScript.bind(this)}>
           <Glyphicon glyph='trash'></Glyphicon>
-        </Button>
+        </button>
       </Col>
     </Row>
   }
@@ -192,7 +194,7 @@ export default class RiveScriptModule extends React.Component {
   render() {
 
     if(!this.state.files) {
-      return <h1>Loading...</h1>
+      return null
     }
 
     const { selected } = this.state
